@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ChronoDev.Domaine.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace ChronoDev.Infrastructure.Context
+{
+    public class ApplicationDbContext:IdentityDbContext<ApplicationUser, IdentityRole<int>,int>
+    {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            //SEEDING=permet de mettre des valeur initial dans la table lors de la migrations
+            builder.Entity<IdentityRole<int>>().HasData(
+                new IdentityRole<int> { Id = 1, Name = "Manager", NormalizedName = "MANAGER" ,ConcurrencyStamp=Guid.NewGuid().ToString() },
+                new IdentityRole<int> { Id = 2, Name = "ChefProjet", NormalizedName = "CHEFPROJET" , ConcurrencyStamp = Guid.NewGuid().ToString() },
+                new IdentityRole<int> { Id = 3, Name = "Developpeur", NormalizedName = "DEVELOPPEUR", ConcurrencyStamp = Guid.NewGuid().ToString() }
+            );
+        }
+    }
+}

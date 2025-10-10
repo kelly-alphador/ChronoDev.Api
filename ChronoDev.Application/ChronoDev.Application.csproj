@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ChronoDev.Domaine\ChronoDev.Domaine.csproj" />
+  </ItemGroup>
+
 </Project>
