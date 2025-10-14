@@ -29,6 +29,70 @@ namespace ChronoDev.Api.Controllers
             _configuration = configuration;
             _roleManager = roleManager;
         }
+        /// <summary>
+        /// Endpoint pour la connexion d'un utilisateur existant
+        /// POST: api/auth/login
+        /// </summary>
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            //  Vérifier si le modèle est valide
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList()
+                });
+            }
+
+            // Rechercher l'utilisateur par email
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user == null)
+            {
+                return Unauthorized(new AuthResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string> { "Email ou mot de passe incorrect" }
+                });
+            }
+
+            // Vérifier le mot de passe
+            var isPasswordCorrect = await _userManager.CheckPasswordAsync(user, dto.Password);
+
+            if (!isPasswordCorrect)
+            {
+                return Unauthorized(new AuthResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string> { "Email ou mot de passe incorrect" }
+                });
+            }
+
+            // Récupérer les rôles de l'utilisateur
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault(); // On prend le premier rôle
+
+            //  Générer le token JWT
+            var token = _jwtService.GenerateJwtToken(user);
+            var expiresAt = _jwtService.GetTokenExpiration();
+
+            //  Retourner la réponse avec toutes les informations
+            return Ok(new AuthResponseDto
+            {
+                Success = true,
+                Token = token,
+                ExpiresAt = expiresAt,
+                Email = user.Email,
+                Nom = user.nom,
+                Prenom = user.prenom,
+                Role = userRole
+            });
+        }
         // <summary>
         /// Endpoint pour l'inscription d'un nouvel utilisateur avec Nom, Prénom et Rôle
         /// POST: api/auth/register
@@ -120,6 +184,7 @@ namespace ChronoDev.Api.Controllers
 
 
         }
+
       
     }
 }
