@@ -17,6 +17,7 @@ namespace ChronoDev.Infrastructure.Context
         {
             base.OnModelCreating(builder);
             //SEEDING=permet de mettre des valeur initial dans la table lors de la migrations
+            //HasData : sert a mettre des donnees initial dans une table de base de donnees
             builder.Entity<IdentityRole<int>>().HasData(
                 new IdentityRole<int> { Id = 1, Name = "Manager", NormalizedName = "MANAGER" ,ConcurrencyStamp=Guid.NewGuid().ToString() },
                 new IdentityRole<int> { Id = 2, Name = "ChefProjet", NormalizedName = "CHEFPROJET" , ConcurrencyStamp = Guid.NewGuid().ToString() },
