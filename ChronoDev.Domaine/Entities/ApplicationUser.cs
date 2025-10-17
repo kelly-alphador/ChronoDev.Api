@@ -11,5 +11,8 @@ namespace ChronoDev.Domaine.Entities
     {
         public string nom {  get; set; }
         public string prenom { get; set; }
+        public ICollection<Projet>? Projets { get; set; }
+        public ICollection<SaisieTemps>? SaisiesTemps { get; set; }
+        public ICollection<Validation>? Validations { get; set; }
     }
 }

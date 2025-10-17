@@ -13,6 +13,11 @@ namespace ChronoDev.Infrastructure.Context
     public class ApplicationDbContext:IdentityDbContext<ApplicationUser, IdentityRole<int>,int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public DbSet<Projet> Projets { get; set; }
+        public DbSet<Tache> Taches { get; set; }
+        public DbSet<SaisieTemps> SaisiesTemps { get; set; }
+        public DbSet<Validation> Validations { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
