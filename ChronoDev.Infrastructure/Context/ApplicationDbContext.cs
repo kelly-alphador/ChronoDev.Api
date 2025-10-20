@@ -21,6 +21,11 @@ namespace ChronoDev.Infrastructure.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.ApplyConfiguration(new DataConfig.ProjectConfig());
+            builder.ApplyConfiguration(new DataConfig.TacheConfig());
+            builder.ApplyConfiguration(new DataConfig.SaisieTempsConfig());
+            builder.ApplyConfiguration(new DataConfig.ValidationConfig());
+
             //SEEDING=permet de mettre des valeur initial dans la table lors de la migrations
             //HasData : sert a mettre des donnees initial dans une table de base de donnees
             builder.Entity<IdentityRole<int>>().HasData(
