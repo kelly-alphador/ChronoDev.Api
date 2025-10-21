@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChronoDev.Application\ChronoDev.Application.csproj" />
-    <ProjectReference Include="..\ChronoDev.Domaine\ChronoDev.Domaine.csproj" />
     <ProjectReference Include="..\ChronoDev.Infrastructure\ChronoDev.Infrastructure.csproj" />
   </ItemGroup>
 

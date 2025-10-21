@@ -4,6 +4,9 @@ using ChronoDev.Infrastructure.Services;
 using ChronoDev.Domaine.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ChronoDev.Domaine.Interface;
+using ChronoDev.Infrastructure.Repository;
+using ChronoDev.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +33,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
 
 // ===== Services =====
 builder.Services.AddScoped<JwtService>();
-
+builder.Services.AddScoped<IProjectRepository,ProjectRepository>();
+builder.Services.AddScoped<ProjetService>();
 // ===== Controllers & Swagger =====
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

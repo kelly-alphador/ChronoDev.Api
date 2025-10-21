@@ -9,8 +9,7 @@ namespace ChronoDev.Domaine.Interface
 {
     public interface IProjectRepository
     {
-        Task<IReadOnlyList<Projet>> GetAllProjectsAsync();
-        Task<IReadOnlyList<Projet>> GetProjectsByIdAsync(int projectId);
-        Task AddProject(Projet projet);
+         Task<IReadOnlyCollection<Projet>> GetAll();
+         Task<IReadOnlyCollection<Projet>> GetByName(string name);
     }
 }

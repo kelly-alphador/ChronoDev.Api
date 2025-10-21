@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ChronoDev.Application.DTO;
 using ChronoDev.Domaine.Entities;
 using ChronoDev.Domaine.Interface;
 using ChronoDev.Infrastructure.Context;
@@ -13,22 +12,31 @@ namespace ChronoDev.Infrastructure.Repository
 {
     public class ProjectRepository:IProjectRepository
     {
-        public readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         public ProjectRepository(ApplicationDbContext context)
         {
             _context = context;
         }
-        public async Task<IReadOnlyList<Projet>> GetAllProjectsAsync()
+        public async Task<IReadOnlyCollection<Projet>> GetAll()
         {
-            return await _context.Projets.ToListAsync();
+            return await _context.Projets.AsNoTracking().ToListAsync();
         }
-        public async Task<IReadOnlyList<Projet>> GetProjectsByIdAsync(int projectId)
+        public async Task<IReadOnlyCollection<Projet>> GetByName(string name)
         {
-            return await _context.Projets.Where(p=>p.id==projectId).ToListAsync();
-        }
-        public async Task AddProject(Projet projet)
-        {
-             _context.Projets.Add(projet);
+            //on verifie si il est null ou vide 
+            if (string.IsNullOrEmpty(name))
+            {
+                return new List<Projet>();
+            }
+            //supprimer l'espace et transforme en minuscule
+            var searchName=name.Trim().ToLower();
+
+            return await _context.Projets.
+                Where(p=>p.nom.ToLower()
+                .Contains(searchName))
+                .AsNoTracking()
+                .OrderBy(p=>p.nom)
+                .ToListAsync();
         }
     }
 }
