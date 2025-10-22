@@ -38,5 +38,26 @@ namespace ChronoDev.Infrastructure.Repository
                 .OrderBy(p=>p.nom)
                 .ToListAsync();
         }
+        public async Task AddProjectAsync(Projet projet)
+        {
+             await _context.AddAsync(projet);
+        }
+        public async Task<bool> ProjetExistAsync(string nom)
+        {
+            return await _context.Projets.AnyAsync(p=>p.nom == nom);
+        }
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var project = await _context.Projets.FindAsync(id);
+            if (project == null)
+                return false;
+
+            _context.Projets.Remove(project);
+            return true;
+        }
+        public async Task<int> GetTotalProjectAsync()
+        {
+            return await _context.Projets.CountAsync();
+        }
     }
 }

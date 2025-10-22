@@ -34,6 +34,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
 // ===== Services =====
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IProjectRepository,ProjectRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ProjetService>();
 // ===== Controllers & Swagger =====
 builder.Services.AddControllers();

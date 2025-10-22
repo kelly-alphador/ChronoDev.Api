@@ -1,4 +1,6 @@
-﻿using ChronoDev.Application.Services;
+﻿using ChronoDev.Application.DTO;
+using ChronoDev.Application.Services;
+using ChronoDev.Domaine.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronoDev.Api.Controllers
@@ -31,6 +33,35 @@ namespace ChronoDev.Api.Controllers
             }
 
             return Ok(response);
+        }
+        [HttpPost]
+        public async Task<ActionResult> AddProject([FromBody] ProjectAddDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _projetService.AddProject(dto);
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Remove(int id)
+        {
+            var result = await _projetService.Remove(id);
+
+            if (result.Success)
+                return Ok(result);
+
+            return NotFound(result.Message); 
+        }
+        [HttpGet("count")]
+        public async Task<ActionResult<ApiResponse>> GetTotalCount()
+        {
+            var result = await _projetService.GetTotalProject();
+
+            if (result.Success)
+                return Ok(result);
+
+            return StatusCode(500, result);
         }
     }
 }
