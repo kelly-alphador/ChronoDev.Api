@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChronoDev.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Projet/[controller]")]
     public class ProjectController : Controller
     {
         private readonly ProjetService _projetService;
