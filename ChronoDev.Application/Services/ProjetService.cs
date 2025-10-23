@@ -108,5 +108,37 @@ namespace ChronoDev.Application.Services
                 return ApiResponse.Fail(false, "aucun donnees");
             }
         }
+        public async Task<ApiResponse> UpdateProject(ProjectUpdateDto projectUpdateDto)
+        {
+            try
+            {
+                // Mapper DTO vers Entity
+                var projet = new Projet
+                {
+                    id = projectUpdateDto.Id,
+                    nom = projectUpdateDto.Nom,
+                    dateCreation = projectUpdateDto.DateCreation,
+                    dateFin = projectUpdateDto.DateFin,
+                    dureeEstimee = projectUpdateDto.DureeEstimee
+                };
+
+                
+                var updated = await _projectRepository.UpdateAsync(projet);
+
+                if (!updated)
+                {
+                    return ApiResponse.Fail(false, "Ce projet n'existe pas");
+                }
+
+                // Sauvegarder les changements
+                await _unitOfWork.SaveChangesAsync();
+
+                return ApiResponse.OK(true, "Projet mis à jour avec succès");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse.Fail(false, $"Error: {ex.Message}");
+            }
+        }
     }
 }

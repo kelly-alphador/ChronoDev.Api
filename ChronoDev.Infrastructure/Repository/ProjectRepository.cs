@@ -55,9 +55,28 @@ namespace ChronoDev.Infrastructure.Repository
             _context.Projets.Remove(project);
             return true;
         }
+    
         public async Task<int> GetTotalProjectAsync()
         {
             return await _context.Projets.CountAsync();
+        }
+        public async Task<bool> UpdateAsync(Projet projet)
+        {
+            var projectExiste=await _context.Projets.FindAsync(projet.id);
+            if(projectExiste == null)
+            {
+                return false;
+            }
+            else
+            {
+                projectExiste.nom=projet.nom;
+                projectExiste.dateFin=projet.dateFin;
+                projectExiste.dateCreation=projet.dateCreation;
+                projectExiste.dureeEstimee=projet.dureeEstimee;
+                _context.Projets.Update(projectExiste);
+                return true;
+            }
+
         }
     }
 }

@@ -63,5 +63,20 @@ namespace ChronoDev.Api.Controllers
 
             return StatusCode(500, result);
         }
+        [HttpPut("{id}")]
+        public async Task<ActionResult> Update(int id, [FromBody] ProjectUpdateDto dto)
+        {
+            if (id != dto.Id)
+            {
+                return BadRequest("L'ID de la route ne correspond pas à l'ID du projet");
+            }
+
+            var result = await _projetService.UpdateProject(dto);
+
+            if (result.Success)
+                return Ok(result);
+
+            return NotFound(result); 
+        }
     }
 }
