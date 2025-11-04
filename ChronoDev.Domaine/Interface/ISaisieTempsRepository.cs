@@ -10,5 +10,6 @@ namespace ChronoDev.Domaine.Interface
     public interface ISaisieTempsRepository
     {
         Task<IReadOnlyCollection<SaisieTemps>> GetAllSaisieTemps();
+        Task<bool> DeleteAsync(int id);
     }
 }

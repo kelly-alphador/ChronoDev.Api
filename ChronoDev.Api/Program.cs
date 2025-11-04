@@ -36,9 +36,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<int>>(options =>
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IProjectRepository,ProjectRepository>();
 builder.Services.AddScoped<ITacheRepository,TacheRepository>();
+builder.Services.AddScoped<ISaisieTempsRepository,SaisieTempsRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ProjetService>();
 builder.Services.AddScoped<TacheService>();
+builder.Services.AddScoped<SaisieTempsService>();
 // ===== Controllers & Swagger =====
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
