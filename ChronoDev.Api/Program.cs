@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ===== JWT =====
 builder.Services.AddJwtAuthentification(builder.Configuration);
-
+//==== CORS =====
+builder.Services.AddCorsConfiguration(builder.Configuration);
 // ===== Database =====
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -53,7 +54,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+//activation de cors
+app.UseCors("DefaultCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
