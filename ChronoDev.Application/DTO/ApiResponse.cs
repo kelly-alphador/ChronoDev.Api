@@ -8,16 +8,17 @@ namespace ChronoDev.Application.DTO
 {
     public class ApiResponse
     {
+        public int StatusCode { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; }
         public object? Data {  get; set; }
         public static ApiResponse OK(bool success, string? message=null, Object? Data = null)
         {
-            return new ApiResponse { Success =true,Data = Data,Message=message??"succes"};
+            return new ApiResponse { StatusCode=200,Success =true,Data = Data,Message=message??"succes"};
         }
-        public static ApiResponse Fail(bool success, string? message)
+        public static ApiResponse Fail(int statuscode,bool success, string? message)
         {
-            return new ApiResponse { Success = false, Message = message };
+            return new ApiResponse { StatusCode=statuscode,Success = false, Message = message };
         }
     }
 }

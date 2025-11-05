@@ -31,5 +31,35 @@ namespace ChronoDev.Infrastructure.Repository
                  _dbContext.SaisiesTemps.Remove(saisieExist);
                 return true;
         }
+        public async Task AddSaisieAsync(SaisieTemps saisieTemps)
+        {
+            await _dbContext.SaisiesTemps.AddAsync(saisieTemps);
+        }
+        public async Task<List<SaisieTemps>> GetSaisiesByDeveloppeurAsync(string nom)
+        {
+            
+            return await _dbContext.SaisiesTemps
+                .AsNoTracking()
+                .Include(s => s.Tache)
+                .Include(s => s.Validations)
+                .Where(s => s.Utilisateur.nom == nom)
+                .OrderByDescending(s => s.dateSaisie)
+                .ToListAsync();
+        }
+       
+        public async Task<IReadOnlyCollection<SaisieTemps>> GetTotalHeuresDeveloppeurSemaine()
+        {
+            // date du lundi de cette semaine
+            var startOfWeek = DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek + 1);
+
+            // fin de la semaine (dimanche)
+            var endOfWeek = startOfWeek.AddDays(7);
+
+            return await _dbContext.SaisiesTemps
+                .AsNoTracking()
+                .Include(s => s.Utilisateur)
+                .Where(s => s.dateSaisie >= startOfWeek && s.dateSaisie < endOfWeek)
+                .ToListAsync();
+        }
     }
 }

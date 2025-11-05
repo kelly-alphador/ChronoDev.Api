@@ -27,7 +27,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse.Fail(false, $"{ex.Message}");
+                return ApiResponse.Fail(500, false, $"{ex.Message}");
             }
         }
         public async Task<ApiResponse> GetAllTacheByProject(int projectid)
@@ -39,7 +39,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex) 
             {
-                return ApiResponse.Fail(false, $"{ex.Message}");
+                return ApiResponse.Fail(500, false, $"{ex.Message}");
             }
         }
         public async Task<ApiResponse> AddTache(TacheAddDto tacheAddDto)
@@ -60,7 +60,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse.Fail(false, $"{ex.Message}");
+                return ApiResponse.Fail(500, false, $"{ex.Message}");
             }
         }
         public async Task<ApiResponse> Delete(int id)
@@ -70,7 +70,7 @@ namespace ChronoDev.Application.Services
                 var delete=await _Tacherepository.DeleteAsync(id);
                 if(!delete)
                 {
-                    return ApiResponse.Fail(false, $"cette {id} de tache n'existe pas");
+                    return ApiResponse.Fail(404,false, $"cette {id} de tache n'existe pas");
                 }
                 else
                 {
@@ -80,7 +80,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse.Fail(false, $"{ex.Message}");
+                return ApiResponse.Fail(500, false, $"{ex.Message}");
             }
         }
     }

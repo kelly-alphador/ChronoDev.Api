@@ -1,4 +1,5 @@
-﻿using ChronoDev.Application.Services;
+﻿using ChronoDev.Application.DTO;
+using ChronoDev.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChronoDev.Api.Controllers
@@ -18,6 +19,19 @@ namespace ChronoDev.Api.Controllers
             var response=await _saisieTempsService.GetAll();
             return Ok(response);
         }
+        [HttpGet("TotalHeure")]
+        public async Task<IActionResult> TotalHeurDeveloppeur()
+        {
+            var response = await _saisieTempsService.TotalHeureDeveloppeur();
+            return Ok(response);
+        }
+        [HttpGet("getByDeveloppeur")]
+        public async Task<IActionResult> GetSaisiTempsByDeveloppeur([FromQuery] string username)
+        {
+            var response = await _saisieTempsService.GetByDeveloppeur(username);
+
+            return StatusCode(response.StatusCode, response);
+        }
         [HttpDelete("{id}")]
         public async Task<ActionResult> Remove(int id)
         {
@@ -27,6 +41,15 @@ namespace ChronoDev.Api.Controllers
                 return Ok(result);
 
             return NotFound(result.Message);
+        }
+        [HttpPost]
+        public async Task<ActionResult> AddSaisie([FromBody] SaisieAddDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _saisieTempsService.AddSaisieTemps(dto);
+            return result.Success ? Ok(result) : BadRequest(result);
         }
     }
 }

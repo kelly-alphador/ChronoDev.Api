@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,9 @@ namespace ChronoDev.Domaine.Entities
         public string Statut { get; set; } = "En attente";
         //relation avec tache 
         public Tache Tache { get; set; }
+        // Propriété calculée pour la durée
+        [NotMapped]
+        public TimeSpan Duree => heure_fin - heure_deb;
         public int TacheId { get; set; }
         //relation avec utilisateur chef de projet et developpeur
         public ApplicationUser Utilisateur { get; set; }

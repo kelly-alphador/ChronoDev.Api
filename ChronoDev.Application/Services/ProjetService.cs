@@ -46,7 +46,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse.Fail(false, ex.Message);
+                return ApiResponse.Fail(500, false, ex.Message);
             }
         }
         public async Task<ApiResponse> AddProject(ProjectAddDto dto)
@@ -56,7 +56,7 @@ namespace ChronoDev.Application.Services
                 var projetexist = await _projectRepository.ProjetExistAsync(dto.nom);
                 if (projetexist)
                 {
-                    return ApiResponse.Fail(false, "un projet avec cette nom existe deja");
+                    return ApiResponse.Fail(404,false, "un projet avec cette nom existe deja");
                 }
                 var projet = new Projet
                 {
@@ -73,7 +73,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse.Fail(false, ex.Message);
+                return ApiResponse.Fail(500, false, ex.Message);
             }
         }
 
@@ -84,7 +84,7 @@ namespace ChronoDev.Application.Services
                 var deleted = await _projectRepository.DeleteAsync(id);
                 if (!deleted)
                 {
-                    return ApiResponse.Fail(false, "Ce projet n'existe pas");
+                    return ApiResponse.Fail(404,false, "Ce projet n'existe pas");
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -93,7 +93,7 @@ namespace ChronoDev.Application.Services
             catch (Exception ex)
             {
                 // Log l'exception ici
-                return ApiResponse.Fail(false, "Erreur lors de la suppression");
+                return ApiResponse.Fail(500, false, "Erreur lors de la suppression");
             }
         }
         public async Task<ApiResponse> GetTotalProject()
@@ -105,7 +105,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse.Fail(false, "aucun donnees");
+                return ApiResponse.Fail(500, false, "aucun donnees");
             }
         }
         public async Task<ApiResponse> UpdateProject(ProjectUpdateDto projectUpdateDto)
@@ -127,7 +127,7 @@ namespace ChronoDev.Application.Services
 
                 if (!updated)
                 {
-                    return ApiResponse.Fail(false, "Ce projet n'existe pas");
+                    return ApiResponse.Fail(404,false, "Ce projet n'existe pas");
                 }
 
                 // Sauvegarder les changements
@@ -137,7 +137,7 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse.Fail(false, $"Error: {ex.Message}");
+                return ApiResponse.Fail(500, false, $"Error: {ex.Message}");
             }
         }
     }
