@@ -38,6 +38,8 @@ builder.Services.AddScoped<IProjectRepository,ProjectRepository>();
 builder.Services.AddScoped<ITacheRepository,TacheRepository>();
 builder.Services.AddScoped<ISaisieTempsRepository,SaisieTempsRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IValidationRepository,ValidationRepository>();
+builder.Services.AddScoped<ValidationService>();
 builder.Services.AddScoped<ProjetService>();
 builder.Services.AddScoped<TacheService>();
 builder.Services.AddScoped<SaisieTempsService>();

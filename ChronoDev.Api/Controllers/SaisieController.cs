@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChronoDev.Api.Controllers
 {
     [ApiController]
-    [Route("[Controller]")]
+    [Route("api/v1/saisies-temps")]
     public class SaisieController : Controller
     {
         private readonly SaisieTempsService _saisieTempsService;
@@ -14,26 +14,26 @@ namespace ChronoDev.Api.Controllers
             _saisieTempsService = saisieTempsService;
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetAllSaisiesTemps()
         {
             var response=await _saisieTempsService.GetAll();
             return Ok(response);
         }
-        [HttpGet("TotalHeure")]
-        public async Task<IActionResult> TotalHeurDeveloppeur()
+        [HttpGet("total-heures")]
+        public async Task<IActionResult> GetTotalHeuresDeveloppeurs()
         {
             var response = await _saisieTempsService.TotalHeureDeveloppeur();
             return Ok(response);
         }
-        [HttpGet("getByDeveloppeur")]
-        public async Task<IActionResult> GetSaisiTempsByDeveloppeur([FromQuery] string username)
+        [HttpGet("developpeur")]
+        public async Task<IActionResult> GetSaisiesTempsByDeveloppeur([FromQuery] string username)
         {
             var response = await _saisieTempsService.GetByDeveloppeur(username);
 
             return StatusCode(response.StatusCode, response);
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Remove(int id)
+        public async Task<ActionResult> DeleteSaisieTemps(int id)
         {
             var result = await _saisieTempsService.Delete(id);
 
@@ -43,7 +43,7 @@ namespace ChronoDev.Api.Controllers
             return NotFound(result.Message);
         }
         [HttpPost]
-        public async Task<ActionResult> AddSaisie([FromBody] SaisieAddDto dto)
+        public async Task<ActionResult> CreateSaisieTemps([FromBody] SaisieAddDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

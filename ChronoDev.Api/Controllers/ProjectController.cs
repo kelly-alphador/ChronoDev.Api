@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChronoDev.Api.Controllers
 {
     [ApiController]
-    [Route("Projet/[controller]")]
+    [Route("api/V1/[controller]")]
     public class ProjectController : Controller
     {
         private readonly ProjetService _projetService;
@@ -16,13 +16,13 @@ namespace ChronoDev.Api.Controllers
         }
 
         [HttpGet]
-        public async  Task<IActionResult> GetAllProject()
+        public async  Task<IActionResult> GetAllProjects()
         {
             var response = await _projetService.GetAllProject(); 
             return Ok(response);
         }
         [HttpGet("Search")]
-        public async Task<ActionResult> GetByName([FromQuery] string name)
+        public async Task<ActionResult> SearchProjectsByName([FromQuery] string name)
         {
             var response = await _projetService.GetProjectByName(name);
 
@@ -35,7 +35,7 @@ namespace ChronoDev.Api.Controllers
             return Ok(response);
         }
         [HttpPost]
-        public async Task<ActionResult> AddProject([FromBody] ProjectAddDto dto)
+        public async Task<ActionResult> CreateProject([FromBody] ProjectAddDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -44,7 +44,7 @@ namespace ChronoDev.Api.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Remove(int id)
+        public async Task<ActionResult> DeleteProject(int id)
         {
             var result = await _projetService.Remove(id);
 
@@ -64,7 +64,7 @@ namespace ChronoDev.Api.Controllers
             return StatusCode(500, result);
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, [FromBody] ProjectUpdateDto dto)
+        public async Task<ActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDto dto)
         {
             if (id != dto.Id)
             {

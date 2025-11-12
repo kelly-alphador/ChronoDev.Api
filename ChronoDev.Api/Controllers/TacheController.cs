@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChronoDev.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/V1/[controller]")]
     public class TacheController : Controller
     {
         private readonly TacheService _tacheService;
@@ -16,7 +16,7 @@ namespace ChronoDev.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetAllTaches()
         {
             var response=await _tacheService.GetAllTache();
             if (response.Success) 
@@ -25,8 +25,8 @@ namespace ChronoDev.Api.Controllers
             }
             else { return BadRequest(response); }
         }
-        [HttpGet("/byproject")]
-        public async Task<IActionResult> GetByProject([FromQuery] int projectId)
+        [HttpGet("projet/{projetId}")]
+        public async Task<IActionResult> GetTachesByProjet([FromQuery] int projectId)
         {
             var response=await _tacheService.GetAllTacheByProject(projectId);
             if (response.Success)
@@ -36,7 +36,7 @@ namespace ChronoDev.Api.Controllers
             else { return BadRequest(response); }
         }
         [HttpPost]
-        public async Task<IActionResult> AddTAche([FromBody] TacheAddDto tacheAddDto)
+        public async Task<IActionResult> CreateTache([FromBody] TacheAddDto tacheAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -45,7 +45,7 @@ namespace ChronoDev.Api.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Remove(int id)
+        public async Task<ActionResult> DeleteTache(int id)
         {
             var result = await _tacheService.Delete(id);
 

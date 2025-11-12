@@ -109,6 +109,7 @@ namespace ChronoDev.Api.Controllers
                     Errors = ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage).ToList()
                 });
             }
+        
             //verifie si l'email est existe
             var EmailExist=await _userManager.FindByEmailAsync(registerDTO.Email);
             if(EmailExist!=null)
@@ -127,6 +128,14 @@ namespace ChronoDev.Api.Controllers
                 {
                     Success = false,
                     Errors = new List<string> { $"le role {registerDTO.Role} n'existe pas" }
+                });
+            }
+            if (registerDTO.Password != registerDTO.PasswordConfirm)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Errors = new List<string> { "le password et confirmPassword doit etre identique" }
                 });
             }
             //Creer une nouvelUser
