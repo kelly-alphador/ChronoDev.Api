@@ -35,7 +35,12 @@ namespace ChronoDev.Application.Services
             try
             {
                 var listTachesByProject=await _Tacherepository.GetAllByProjectId(projectid);
-                return ApiResponse.OK(true, "Donnees retourner avec succes", listTachesByProject);
+                var listTachesByProjectIdNom = listTachesByProject.Select(t => new TacheIdNomDto
+                {
+                    Id = t.id,
+                    Nom = t.nom,
+                }).ToList();
+                return ApiResponse.OK(true, "Donnees retourner avec succes", listTachesByProjectIdNom);
             }
             catch (Exception ex) 
             {

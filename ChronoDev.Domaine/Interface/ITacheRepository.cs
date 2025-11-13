@@ -10,7 +10,7 @@ namespace ChronoDev.Domaine.Interface
     public interface ITacheRepository
     {
         Task<IReadOnlyCollection<Tache>> GetAll();
-        Task<IReadOnlyCollection<Tache>> GetAllByProjectId(int projectId);
+        Task<List<(int id,string nom)>> GetAllByProjectId(int projectId);
         Task AddTacheAsync(Tache tache);
         Task<bool> DeleteAsync(int idtache);
     }

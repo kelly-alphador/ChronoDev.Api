@@ -21,9 +21,9 @@ namespace ChronoDev.Infrastructure.Repository
         {
             return await _context.Taches.AsNoTracking().ToListAsync();
         }
-        public async Task<IReadOnlyCollection<Tache>> GetAllByProjectId(int projectId)
+        public async Task<List<(int id, string nom)>> GetAllByProjectId(int projectId)
         {
-            return await _context.Taches.Where(t=>t.ProjetId==projectId).AsNoTracking().ToListAsync();
+            return await _context.Taches.Where(t=>t.ProjetId==projectId).Select(t=>new ValueTuple<int,string>(t.id,t.nom)).ToListAsync();
         }
         public async Task AddTacheAsync(Tache tache)
         {

@@ -17,9 +17,9 @@ namespace ChronoDev.Infrastructure.Repository
         {
             _context = context;
         }
-        public async Task<IReadOnlyCollection<Projet>> GetAll()
+        public async Task<List<(int id,string nom)>> GetIdName()
         {
-            return await _context.Projets.AsNoTracking().ToListAsync();
+            return await _context.Projets.Select(p=>new ValueTuple<int,string>(p.id,p.nom)).ToListAsync();
         }
         public async Task<IReadOnlyCollection<Projet>> GetByName(string name)
         {

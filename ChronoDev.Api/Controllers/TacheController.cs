@@ -25,7 +25,7 @@ namespace ChronoDev.Api.Controllers
             }
             else { return BadRequest(response); }
         }
-        [HttpGet("projet/{projetId}")]
+        [HttpGet("TacheByProjectId")]
         public async Task<IActionResult> GetTachesByProjet([FromQuery] int projectId)
         {
             var response=await _tacheService.GetAllTacheByProject(projectId);

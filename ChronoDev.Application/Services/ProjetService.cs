@@ -21,12 +21,14 @@ namespace ChronoDev.Application.Services
 
         public async Task<ApiResponse> GetAllProject()
         {
-            var projets = await _projectRepository.GetAll();
+            var projets = await _projectRepository.GetIdName();
+            var listprojet = projets.Select(p => new ProjetIdNomDto { Id=p.id,Nom=p.nom }).ToList();
+
 
             return new ApiResponse
             {
                 Success = true,
-                Data = projets
+                Data = listprojet
             };
         }
         public async Task<ApiResponse> GetProjectByName(string name)
