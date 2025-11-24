@@ -31,6 +31,25 @@ namespace ChronoDev.Application.Services
                 Data = listprojet
             };
         }
+        public async Task<ApiResponse> GetProjectById(int id)
+        {
+            var project = await _projectRepository.GetProjectById(id);
+            var listprojectById = project.Select(p => new ProjectDto
+            {
+                nom = p.nom,
+                dateCreation= p.DateCreation,
+                dateFin=p.datefin,
+                dureeEstimee=p.dureeEstime,
+                nombre_jour=p.nbjour,
+                manager=p.manager
+            });
+
+            return new ApiResponse
+            {
+                Success = true,
+                Data = listprojectById
+            };
+        }
         public async Task<ApiResponse> GetProjectByName(string name)
         {
             try
@@ -58,7 +77,7 @@ namespace ChronoDev.Application.Services
                 var projetexist = await _projectRepository.ProjetExistAsync(dto.nom);
                 if (projetexist)
                 {
-                    return ApiResponse.Fail(404,false, "un projet avec cette nom existe deja");
+                    return ApiResponse.Fail(400,false, "Un projet avec ce nom existe déjà.");
                 }
                 var projet = new Projet
                 {
@@ -70,7 +89,7 @@ namespace ChronoDev.Application.Services
                 };
                 await _projectRepository.AddProjectAsync(projet);
                 await _unitOfWork.SaveChangesAsync();
-                return ApiResponse.OK(true, "donnees enregister");
+                return ApiResponse.OK(true, "Enregistrement réussi");
 
             }
             catch (Exception ex)
@@ -94,7 +113,6 @@ namespace ChronoDev.Application.Services
             }
             catch (Exception ex)
             {
-                // Log l'exception ici
                 return ApiResponse.Fail(500, false, "Erreur lors de la suppression");
             }
         }

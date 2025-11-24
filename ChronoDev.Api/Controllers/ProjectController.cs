@@ -1,4 +1,5 @@
-﻿using ChronoDev.Application.DTO;
+﻿using Azure;
+using ChronoDev.Application.DTO;
 using ChronoDev.Application.Services;
 using ChronoDev.Domaine.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +20,26 @@ namespace ChronoDev.Api.Controllers
         public async  Task<IActionResult> GetAllProjects()
         {
             var response = await _projetService.GetAllProject(); 
+            
             return Ok(response);
         }
         [HttpGet("Search")]
         public async Task<ActionResult> SearchProjectsByName([FromQuery] string name)
         {
             var response = await _projetService.GetProjectByName(name);
+
+            // Retourner le code HTTP approprié selon le succès
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+        [HttpGet("ProjectById")]
+        public async Task<ActionResult> ProjectsById([FromQuery] int id)
+        {
+            var response = await _projetService.GetProjectById(id);
 
             // Retourner le code HTTP approprié selon le succès
             if (!response.Success)
@@ -48,10 +63,7 @@ namespace ChronoDev.Api.Controllers
         {
             var result = await _projetService.Remove(id);
 
-            if (result.Success)
-                return Ok(result);
-
-            return NotFound(result.Message); 
+            return StatusCode(result.StatusCode, result);
         }
         [HttpGet("count")]
         public async Task<ActionResult<ApiResponse>> GetTotalCount()

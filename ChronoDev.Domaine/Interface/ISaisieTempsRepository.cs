@@ -13,6 +13,8 @@ namespace ChronoDev.Domaine.Interface
         Task<bool> DeleteAsync(int id);
         Task AddSaisieAsync(SaisieTemps saisieTemps);
         Task<List<SaisieTemps>> GetSaisiesByDeveloppeurAsync(string userName);
-        Task<IReadOnlyCollection<SaisieTemps>> GetTotalHeuresDeveloppeurSemaine();
+        Task<IReadOnlyCollection<SaisieTemps>> GetTotalHeuresDeveloppeurParSemaine();
+        Task<IReadOnlyCollection<SaisieTemps>> GetSaisiesTempsParSemaineAsync(DateTime debut, DateTime fin);
+        Task<IReadOnlyCollection<SaisieTemps>> GetSaisiesTempsParUtilisateurAsync(int utilisateurId, DateTime debut, DateTime fin);
     }
 }

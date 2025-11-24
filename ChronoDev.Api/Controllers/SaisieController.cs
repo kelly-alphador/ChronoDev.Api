@@ -19,10 +19,10 @@ namespace ChronoDev.Api.Controllers
             var response=await _saisieTempsService.GetAll();
             return Ok(response);
         }
-        [HttpGet("total-heures")]
-        public async Task<IActionResult> GetTotalHeuresDeveloppeurs()
+        [HttpGet("total-heures-par-semaine")]
+        public async Task<IActionResult> GetTotalHeuresDeveloppeursParSemaine()
         {
-            var response = await _saisieTempsService.TotalHeureDeveloppeur();
+            var response = await _saisieTempsService.TotalHeureDeveloppeurParSemaine();
             return Ok(response);
         }
         [HttpGet("developpeur")]
@@ -51,5 +51,24 @@ namespace ChronoDev.Api.Controllers
             var result = await _saisieTempsService.AddSaisieTemps(dto);
             return result.Success ? Ok(result) : BadRequest(result);
         }
+        [HttpGet("heures-semaine")]
+        public async Task<IActionResult> GetHeuresSemaine(DateTime debut, DateTime fin)
+        {
+            var dto = await _saisieTempsService.GetHeuresParSemaineAsync(debut, fin);
+            return Ok(dto);
+        }
+        [HttpGet("heures-par-mois")]
+        public async Task<IActionResult> GetHeuresParMois(int annee, int mois)
+        {
+            var result = await _saisieTempsService.GetHeuresParMoisAsync(annee, mois);
+            return Ok(result);
+        }
+        [HttpGet("mon-dashboard")]
+        public async Task<IActionResult> GetDashboardUtilisateur(int utilisateurId, DateTime debut, DateTime fin)
+        {
+            var result = await _saisieTempsService.GetHeuresParSemaineParUtilisateurAsync(utilisateurId, debut, fin);
+            return Ok(result);
+        }
+
     }
 }

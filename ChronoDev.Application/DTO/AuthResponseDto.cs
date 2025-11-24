@@ -15,6 +15,7 @@ namespace ChronoDev.Application.DTO
         public string Nom { get; set; }
         public string Prenom { get; set; }
         public string Role { get; set; }
+        public int id {  get; set; }
         public List<string> Errors { get; set; }
 
         public AuthResponseDto()

@@ -17,6 +17,28 @@ namespace ChronoDev.Infrastructure.Repository
         {
             _context = context;
         }
+        public async Task<List<(string nom, DateTime DateCreation, double dureeEstime, DateTime datefin, int nbjour, string manager)>> GetProjectById(int id)
+        {
+                return await _context.Projets
+                .Where(p => p.id == id)
+                .Include(p => p.Manager)
+                .Select(p => new ValueTuple<string, DateTime, double, DateTime, int, string>(
+                    p.nom,
+                    p.dateCreation,
+                    p.dureeEstimee,
+                    p.dateFin,
+
+                    // ---- Condition : si dateFin < aujourd'hui -> 0 ----
+                    p.dateFin < DateTime.Today
+                        ? 0
+                        : EF.Functions.DateDiffDay(DateTime.Today, p.dateFin),
+
+                    p.Manager.nom + " " + p.Manager.prenom
+                ))
+                .ToListAsync();
+
+
+        }
         public async Task<List<(int id,string nom)>> GetIdName()
         {
             return await _context.Projets.Select(p=>new ValueTuple<int,string>(p.id,p.nom)).ToListAsync();

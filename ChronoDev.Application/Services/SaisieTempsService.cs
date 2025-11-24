@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -79,29 +80,45 @@ namespace ChronoDev.Application.Services
                 return ApiResponse.Fail(500, false, ex.Message);
             }
         }
-        public async Task<ApiResponse> TotalHeureDeveloppeur()
+        public async Task<ApiResponse> TotalHeureDeveloppeurParSemaine()
         {
             try
             {
-                var listSaisitemps = await _repository.GetTotalHeuresDeveloppeurSemaine();
-                var list = listSaisitemps
-                    .GroupBy(s => s.Utilisateur.nom)
-                    .Select(g => new HeureDevelopperDto
+                var listSaisietemps = await _repository.GetTotalHeuresDeveloppeurParSemaine();
+
+                var result = listSaisietemps
+                    .GroupBy(s => new
                     {
-                        nomDeveloppeur = g.Key,
+                        UtilisateurId = s.UtilisateurId,
+                        Nom = s.Utilisateur.nom,
+                        Semaine = ISOWeek.GetWeekOfYear(s.dateSaisie),
+                        Annee = s.dateSaisie.Year
+                    })
+                    .Select(g => new HeureDeveloppeurSemaineDto
+                    {
+                        UtilisateurId = g.Key.UtilisateurId,
+                        NomDeveloppeur = g.Key.Nom,
+                        Semaine = g.Key.Semaine,
+                        Annee = g.Key.Annee,
+                        DateDebutSemaine = g.Min(s => s.dateSaisie).Date.AddDays(-(int)g.Min(s => s.dateSaisie).DayOfWeek + 1),
+                        DateFinSemaine = g.Min(s => s.dateSaisie).Date.AddDays(-(int)g.Min(s => s.dateSaisie).DayOfWeek + 1).AddDays(6),
                         Duree = TimeSpan.FromMinutes(
                             g.Sum(s => (s.heure_fin - s.heure_deb).TotalMinutes)
-                        ).ToString(@"hh\:mm")
+                        ).ToString(@"hh\:mm"),
+                        TotalHeures = g.Sum(s => (s.heure_fin - s.heure_deb).TotalHours)
                     })
+                    .OrderByDescending(x => x.Annee)
+                    .ThenByDescending(x => x.Semaine)
+                    .ThenBy(x => x.UtilisateurId)
                     .ToList();
-                return ApiResponse.OK(true,"Données retournées avec succès", list);
+
+                return ApiResponse.OK(true, "Données retournées avec succès", result);
             }
             catch (Exception ex)
             {
                 return ApiResponse.Fail(500, false, ex.Message);
             }
         }
-
         public async Task<ApiResponse> GetByDeveloppeur(string nom)
         {
             try
@@ -136,5 +153,95 @@ namespace ChronoDev.Application.Services
             }
             
         }
+        public async Task<List<HeuresSemaineManagerDTO>> GetHeuresParSemaineAsync(DateTime debut, DateTime fin)
+        {
+            var saisies = await _repository.GetSaisiesTempsParSemaineAsync(debut, fin);
+
+            var grouped = saisies
+                .GroupBy(s => s.Utilisateur)
+                .Select(g => new HeuresSemaineManagerDTO
+                {
+                    Developpeur = g.Key != null ? $"{g.Key.nom} {g.Key.prenom}" : "",
+                    TotalHeures = Math.Round(g.Sum(s => (s.heure_fin - s.heure_deb).TotalHours), 2),
+                    NombreProjets = g.Select(s => s.Tache?.Projet?.id).Where(id => id != null).Distinct().Count(),
+                    Projets = g.Select(s => s.Tache?.Projet?.nom)
+                                .Where(n => !string.IsNullOrEmpty(n))
+                                .Distinct()
+                                .ToList(),
+                    Etats = g.Select(s => s.Statut ?? "En attente")
+                             .Distinct()
+                             .ToList()
+                })
+                .ToList();
+
+            return grouped;
+        }
+        public async Task<List<HeuresParDeveloppeurDTO>> GetHeuresParMoisAsync(int annee, int mois)
+        {
+            var debut = new DateTime(annee, mois, 1);
+            var fin = debut.AddMonths(1).AddSeconds(-1); 
+
+            var saisies = await _repository.GetSaisiesTempsParSemaineAsync(debut, fin);
+
+            var grouped = saisies
+                .GroupBy(s => s.Utilisateur)
+                .Select(g => new HeuresParDeveloppeurDTO
+                {
+                    Developpeur = g.Key != null ? $"{g.Key.nom} {g.Key.prenom}" : "",
+                    TotalHeures = Math.Round(g.Sum(s => (s.heure_fin - s.heure_deb).TotalHours), 2),
+                    Projets = g
+                        .Where(s => s.Tache?.Projet != null)
+                        .GroupBy(s => s.Tache.Projet.nom)
+                        .Select(p => new HeuresParProjetDTO
+                        {
+                            Projet = p.Key,
+                            Heures = Math.Round(p.Sum(s => (s.heure_fin - s.heure_deb).TotalHours), 2)
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            return grouped;
+        }
+        public async Task<HeuresSemaineDTO> GetHeuresParSemaineParUtilisateurAsync(int utilisateurId, DateTime debut, DateTime fin)
+        {
+            var saisies = await _repository.GetSaisiesTempsParUtilisateurAsync(utilisateurId, debut, fin);
+
+            if (saisies == null || !saisies.Any())
+                return new HeuresSemaineDTO
+                {
+                    Developpeur = "",
+                    TotalHeures = 0,
+                    Projets = new List<string>(),
+                    Etats = new List<string>()
+                };
+
+            var totalHeures = Math.Round(saisies.Sum(s => (s.heure_fin - s.heure_deb).TotalHours), 2);
+
+            var projets = saisies
+                .Where(s => s.Tache?.Projet != null)
+                .Select(s => s.Tache.Projet.nom)
+                .Distinct()
+                .ToList();
+
+            var etats = saisies
+                .Select(s => s.Statut ?? "En attente")
+                .Distinct()
+                .ToList();
+
+           
+            string developpeur = saisies.FirstOrDefault()?.Utilisateur != null
+                ? $"{saisies.First().Utilisateur.nom} {saisies.First().Utilisateur.prenom}"
+                : "";
+
+            return new HeuresSemaineDTO
+            {
+                Developpeur = developpeur,
+                TotalHeures = totalHeures,
+                Projets = projets,
+                Etats = etats
+            };
+        }
+
     }
 }

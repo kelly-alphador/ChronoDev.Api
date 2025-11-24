@@ -29,6 +29,14 @@ namespace ChronoDev.Api.Controllers
             _configuration = configuration;
             _roleManager = roleManager;
         }
+        [HttpGet("nombre_user")]
+        public async Task<IActionResult> GetUserCount()
+        {
+            // Récupérer le nombre d'utilisateurs
+            int userCount = _userManager.Users.Count();
+
+            return Ok(userCount);
+        }
         /// <summary>
         /// Endpoint pour la connexion d'un utilisateur existant
         /// POST: api/auth/login
@@ -90,7 +98,8 @@ namespace ChronoDev.Api.Controllers
                 Email = user.Email,
                 Nom = user.nom,
                 Prenom = user.prenom,
-                Role = userRole
+                Role = userRole,
+                id=user.Id,
             });
         }
         // <summary>
@@ -184,6 +193,7 @@ namespace ChronoDev.Api.Controllers
             {
                 Success = true,
                 Token = token,
+                id=newUser.Id,
                 ExpiresAt = expiresAt,
                 Email = newUser.Email,
                 Nom = newUser.nom,

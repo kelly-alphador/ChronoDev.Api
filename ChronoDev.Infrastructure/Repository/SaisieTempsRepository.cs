@@ -46,20 +46,34 @@ namespace ChronoDev.Infrastructure.Repository
                 .OrderByDescending(s => s.dateSaisie)
                 .ToListAsync();
         }
-       
-        public async Task<IReadOnlyCollection<SaisieTemps>> GetTotalHeuresDeveloppeurSemaine()
+        public async Task<IReadOnlyCollection<SaisieTemps>> GetTotalHeuresDeveloppeurParSemaine()
         {
-            // date du lundi de cette semaine
-            var startOfWeek = DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek + 1);
-
-            // fin de la semaine (dimanche)
-            var endOfWeek = startOfWeek.AddDays(7);
-
             return await _dbContext.SaisiesTemps
                 .AsNoTracking()
                 .Include(s => s.Utilisateur)
-                .Where(s => s.dateSaisie >= startOfWeek && s.dateSaisie < endOfWeek)
                 .ToListAsync();
         }
+        public async Task<IReadOnlyCollection<SaisieTemps>> GetSaisiesTempsParSemaineAsync(DateTime debut, DateTime fin)
+        {
+            return await _dbContext.SaisiesTemps
+                .Where(s => s.dateSaisie >= debut && s.dateSaisie <= fin)
+                .Include(s => s.Utilisateur)
+                .Include(s => s.Tache)
+                    .ThenInclude(t => t.Projet)
+                .ToListAsync();
+        }
+        public async Task<IReadOnlyCollection<SaisieTemps>> GetSaisiesTempsParUtilisateurAsync(int utilisateurId, DateTime debut, DateTime fin)
+        {
+            return await _dbContext.SaisiesTemps
+                .Where(s => s.UtilisateurId == utilisateurId &&
+                            s.dateSaisie >= debut &&
+                            s.dateSaisie <= fin)
+                .Include(s => s.Utilisateur)
+                .Include(s => s.Tache)
+                    .ThenInclude(t => t.Projet)
+                .ToListAsync();
+        }
+
+
     }
 }
