@@ -203,6 +203,33 @@ namespace ChronoDev.Application.Services
 
             return grouped;
         }
+        public async Task<List<HeuresParDeveloppeurDTO>> GetHeuresParMoisAsyncByUser(int utilisateurId, int annee, int mois)
+        {
+            var debut = new DateTime(annee, mois, 1);
+            var fin = debut.AddMonths(1).AddSeconds(-1);
+
+            var saisies = await _repository.GetSaisiesTempsParUtilisateurAsync(utilisateurId, debut, fin);
+
+            var grouped = saisies
+                .GroupBy(s => s.Utilisateur)
+                .Select(g => new HeuresParDeveloppeurDTO
+                {
+                    Developpeur = g.Key != null ? $"{g.Key.nom} {g.Key.prenom}" : "",
+                    TotalHeures = Math.Round(g.Sum(s => (s.heure_fin - s.heure_deb).TotalHours), 2),
+                    Projets = g
+                        .Where(s => s.Tache?.Projet != null)
+                        .GroupBy(s => s.Tache.Projet.nom)
+                        .Select(p => new HeuresParProjetDTO
+                        {
+                            Projet = p.Key,
+                            Heures = Math.Round(p.Sum(s => (s.heure_fin - s.heure_deb).TotalHours), 2)
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            return grouped;
+        }
         public async Task<HeuresSemaineDTO> GetHeuresParSemaineParUtilisateurAsync(int utilisateurId, DateTime debut, DateTime fin)
         {
             var saisies = await _repository.GetSaisiesTempsParUtilisateurAsync(utilisateurId, debut, fin);
