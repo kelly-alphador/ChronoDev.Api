@@ -18,6 +18,26 @@ namespace ChronoDev.Application.Services
             _projectRepository = projectRepository;
             _unitOfWork = unitOfWork;
         }
+        public async Task<ApiResponse> GetAllProjectsStats()
+        {
+            try
+            {
+                
+                var (total, enCours, termine) = await _projectRepository.GetAllProjectsWithStats();
+                var data = new
+                {
+                    total,
+                    enCours,
+                    termine
+                };
+
+                return ApiResponse.OK(false, "Données retournées avec succès", data);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse.Fail(500, false, "Erreur lors de la récupération des données");
+            }
+        }
 
         public async Task<ApiResponse> GetAllProject()
         {

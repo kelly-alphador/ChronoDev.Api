@@ -18,7 +18,8 @@ namespace ChronoDev.Domaine.Interface
          Task<bool> ProjetExistAsync(string nom);
          Task<bool> DeleteAsync(int id);
          Task<int> GetTotalProjectAsync();
-         Task<bool> UpdateAsync(Projet projet);
+         Task<(int total,int enCours,int termine)> GetAllProjectsWithStats();
+        Task<bool> UpdateAsync(Projet projet);
        
     }
 }

@@ -17,6 +17,15 @@ namespace ChronoDev.Infrastructure.Repository
         {
             _context = context;
         }
+        public async Task<(int total,int enCours,int termine)> GetAllProjectsWithStats()
+        {
+            var today= DateTime.Now;
+            var total=await _context.Projets.CountAsync();
+            var encours = await _context.Projets.CountAsync(p => p.dateFin >= today);
+            var termine=await _context.Projets.CountAsync(p=>p.dateFin < today);
+            return (total,encours,termine);
+        }
+
         public async Task<List<(string nom, DateTime DateCreation, double dureeEstime, DateTime datefin, int nbjour, string manager)>> GetProjectById(int id)
         {
                 return await _context.Projets
@@ -100,5 +109,6 @@ namespace ChronoDev.Infrastructure.Repository
             }
 
         }
+
     }
 }

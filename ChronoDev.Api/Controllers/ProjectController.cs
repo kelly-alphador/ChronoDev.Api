@@ -68,7 +68,7 @@ namespace ChronoDev.Api.Controllers
         [HttpGet("count")]
         public async Task<ActionResult<ApiResponse>> GetTotalCount()
         {
-            var result = await _projetService.GetTotalProject();
+            var result = await _projetService.GetAllProjectsStats();
 
             if (result.Success)
                 return Ok(result);

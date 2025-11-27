@@ -32,11 +32,37 @@ namespace ChronoDev.Api.Controllers
         [HttpGet("nombre_user")]
         public async Task<IActionResult> GetUserCount()
         {
-            // Récupérer le nombre d'utilisateurs
+            
             int userCount = _userManager.Users.Count();
 
-            return Ok(userCount);
+            var allUsers = _userManager.Users.ToList();
+
+            int userDeveloppeur = 0;
+            int userAdmin = 0;
+            int chefProjet = 0;
+
+            foreach (var user in allUsers)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Developpeur"))
+                    userDeveloppeur++;
+                else if (await _userManager.IsInRoleAsync(user, "Manager"))
+                    userAdmin++;
+                else if (await _userManager.IsInRoleAsync(user, "ChefProjet"))
+                    chefProjet++;
+            }
+
+            
+            var result = new
+            {
+                TotalUsers = userCount,
+                Developpeurs = userDeveloppeur,
+                Managers = userAdmin,
+                ChefsProjet = chefProjet
+            };
+
+            return Ok(result);
         }
+
         /// <summary>
         /// Endpoint pour la connexion d'un utilisateur existant
         /// POST: api/auth/login
