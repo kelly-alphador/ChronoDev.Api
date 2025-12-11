@@ -52,6 +52,7 @@ namespace ChronoDev.Infrastructure.Repository
         {
             return await _context.Projets.Select(p=>new ValueTuple<int,string>(p.id,p.nom)).ToListAsync();
         }
+       
         public async Task<IReadOnlyCollection<Projet>> GetByName(string name)
         {
             //on verifie si il est null ou vide 

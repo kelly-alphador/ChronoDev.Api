@@ -269,6 +269,21 @@ namespace ChronoDev.Application.Services
                 Etats = etats
             };
         }
+        public async Task<IReadOnlyCollection<SaisieTempsDto>> GetSaisiesDeLaSemaineAsync(int utilisateurId, DateTime debut, DateTime fin)
+        {
+            var entities = await _repository.GetSaisiesTempsParUtilisateurAsync(utilisateurId, debut, fin);
+
+            return entities.Select(e => new SaisieTempsDto
+            {
+                SaisieId = e.id,
+                DateSaisie = e.dateSaisie,
+                Heures = e.Duree,
+                NomProjet = e.Tache.Projet.nom,
+                NomTache = e.Tache.nom,
+                NomUtilisateur = e.Utilisateur.nom,
+                Prenom=e.Utilisateur.prenom
+            }).ToList();
+        }
 
     }
 }

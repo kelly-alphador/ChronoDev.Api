@@ -75,6 +75,11 @@ namespace ChronoDev.Api.Controllers
             var result = await _saisieTempsService.GetHeuresParSemaineParUtilisateurAsync(utilisateurId, debut, fin);
             return Ok(result);
         }
-
+        [HttpGet("utilisateur/{utilisateurId}")]
+        public async Task<IActionResult> GetSaisies(int utilisateurId,[FromQuery] DateTime debut,[FromQuery] DateTime fin)
+        {
+            var result = await _saisieTempsService.GetSaisiesDeLaSemaineAsync(utilisateurId, debut, fin);
+            return Ok(result);
+        }
     }
 }
