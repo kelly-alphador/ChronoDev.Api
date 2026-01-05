@@ -32,6 +32,7 @@ namespace ChronoDev.Api.Controllers
 
             return StatusCode(response.StatusCode, response);
         }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteSaisieTemps(int id)
         {

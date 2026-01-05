@@ -29,6 +29,25 @@ namespace ChronoDev.Api.Controllers
             _configuration = configuration;
             _roleManager = roleManager;
         }
+        [HttpGet("listeUserNom")]
+        public async Task<IActionResult> GetUserNom()
+        {
+            // 1Récupérer les managers
+            var managers = await _userManager.GetUsersInRoleAsync("Manager");
+
+            // 2Exclure les managers
+            var ListeUser = _userManager.Users
+                .Where(u => !managers.Select(m => m.Id).Contains(u.Id))
+                .Select(u => new
+                {
+                    u.nom,
+                    u.prenom
+                })
+                .ToList();
+
+            return Ok(ListeUser);
+
+        }
         [HttpGet("nombre_user")]
         public async Task<IActionResult> GetUserCount()
         {

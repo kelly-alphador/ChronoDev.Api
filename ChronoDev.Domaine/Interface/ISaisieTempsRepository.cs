@@ -9,7 +9,7 @@ namespace ChronoDev.Domaine.Interface
 {
     public interface ISaisieTempsRepository
     {
-        Task<IReadOnlyCollection<SaisieTemps>> GetAllSaisieTemps();
+        Task<IReadOnlyCollection<SaisieTemps>> GetAllSaisieTempsWithValidations();
         Task<bool> DeleteAsync(int id);
         Task AddSaisieAsync(SaisieTemps saisieTemps);
         Task<List<SaisieTemps>> GetSaisiesByDeveloppeurAsync(string userName);

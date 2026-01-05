@@ -17,9 +17,9 @@ namespace ChronoDev.Infrastructure.Repository
         {
             _dbContext = dbContext;
         }
-        public async Task<IReadOnlyCollection<SaisieTemps>> GetAllSaisieTemps()
+        public async Task<IReadOnlyCollection<SaisieTemps>> GetAllSaisieTempsWithValidations()
         {
-            var listSaisiTemps = await _dbContext.SaisiesTemps.AsNoTracking().ToListAsync();
+            var listSaisiTemps = await _dbContext.SaisiesTemps.Include(st=>st.Validations).AsNoTracking().ToListAsync();
             return listSaisiTemps;
         }
         public async Task<bool> DeleteAsync(int id)

@@ -23,11 +23,24 @@ namespace ChronoDev.Application.Services
         {
             try
             {
-                var listSaisieTemps=await _repository.GetAllSaisieTemps();
+                var listSaisieTemps=await _repository.GetAllSaisieTempsWithValidations();
+                var result = listSaisieTemps.Select(st => new SaisieTempsWithValidationDto
+                {
+                    Id = st.id,
+                    DateSaisie = st.dateSaisie,
+                    HeureDeb = st.heure_deb,
+                    HeureFin = st.heure_fin,
+                    Commentaire = st.commentaire,
+                    Statut = st.Statut,
+                    Decision = st.Validations
+                    .OrderByDescending(v => v.dateValidation)
+                    .Select(v => v.Decision)
+                    .FirstOrDefault()
+                });
                 return new ApiResponse
                 {
                     Success = true,
-                    Data = listSaisieTemps,
+                    Data = result,
                     Message = "donnees retourner avec succes"
                 };
             }
@@ -123,36 +136,54 @@ namespace ChronoDev.Application.Services
         {
             try
             {
-                var listSaisiParDeveloppeur = await _repository.GetSaisiesByDeveloppeurAsync(nom);
-                if (!listSaisiParDeveloppeur.Any())
+                var listSaisiParDeveloppeur =
+                    await _repository.GetSaisiesByDeveloppeurAsync(nom);
+
+                // Cas : aucune saisie (INFORMATION)
+                if (listSaisiParDeveloppeur == null || !listSaisiParDeveloppeur.Any())
                 {
-                    return ApiResponse.Fail(404,false, $"le donnees n'existe pas");
+                    return ApiResponse.OK(
+                        true,
+                        "Aucune saisie de temps n’a encore été enregistrée pour ce développeur.",
+                        new List<SaisieTempsReadDto>()
+                    );
                 }
-                else
+
+                //  Cas normal
+                var list = listSaisiParDeveloppeur.Select(s => new SaisieTempsReadDto
                 {
-                    var list = listSaisiParDeveloppeur
-                    .Select(s => new SaisieTempsReadDto
-                    {
-                        Id = s.id,
-                        DateSaisie = s.dateSaisie,
-                        HeureDebut = s.heure_deb,
-                        HeureFin = s.heure_fin,
-                        Duree = s.heure_fin - s.heure_deb,
-                        Commentaire = s.commentaire,
-                        Statut = s.Statut,
-                        TacheNom = s.Tache.nom,
-                        NombreValidations = s.Validations.Count
-                    }).ToList();
-                    return ApiResponse.OK(true, "donnees retourner avec succes", list);
-                }
-        
+                    Id = s.id,
+                    DateSaisie = s.dateSaisie,
+                    HeureDebut = s.heure_deb,
+                    HeureFin = s.heure_fin,
+                    Duree = s.heure_fin - s.heure_deb,
+                    Commentaire = s.commentaire,
+                    Statut = s.Statut,
+                    TacheNom = s.Tache.nom,
+                    NombreValidations = s.Validations.Count,
+                    Decision = s.Validations
+                    .OrderByDescending(v => v.dateValidation)
+                    .Select(v => v.Decision)
+                    .FirstOrDefault()
+                }).ToList();
+
+                return ApiResponse.OK(
+                    true,
+                    "Données retournées avec succès.",
+                    list
+                );
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                return ApiResponse.Fail(500,false, $"{ex.Message}");
+                // Vraie erreur technique
+                return ApiResponse.Fail(
+                    500,
+                    false,
+                    "Une erreur interne est survenue lors de la récupération des saisies de temps."
+                );
             }
-            
         }
+
         public async Task<List<HeuresSemaineManagerDTO>> GetHeuresParSemaineAsync(DateTime debut, DateTime fin)
         {
             var saisies = await _repository.GetSaisiesTempsParSemaineAsync(debut, fin);
@@ -286,4 +317,5 @@ namespace ChronoDev.Application.Services
         }
 
     }
+
 }
