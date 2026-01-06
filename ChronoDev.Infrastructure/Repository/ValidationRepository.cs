@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ChronoDev.Domaine.Entities;
 using ChronoDev.Domaine.Interface;
 using ChronoDev.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChronoDev.Infrastructure.Repository
 {
@@ -20,5 +21,15 @@ namespace ChronoDev.Infrastructure.Repository
         {
             await _context.Validations.AddAsync(validation);
         }
+        public async Task<Validation?> GetBySaisieIdAsync(int saisieId)
+        {
+            return await _context.Validations
+                .FirstOrDefaultAsync(v => v.SaisieDeTempsId == saisieId);
+        }
+        public void UpdateValidation(Validation validation)
+        {
+            _context.Validations.Update(validation);
+        }
+
     }
 }

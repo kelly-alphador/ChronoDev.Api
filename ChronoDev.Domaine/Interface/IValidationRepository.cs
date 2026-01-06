@@ -10,5 +10,7 @@ namespace ChronoDev.Domaine.Interface
     public interface IValidationRepository
     {
         Task CreateValidation(Validation validation);
+        Task<Validation?> GetBySaisieIdAsync(int saisieId);
+        void UpdateValidation(Validation validation);
     }
 }

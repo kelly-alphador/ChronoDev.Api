@@ -22,22 +22,42 @@ namespace ChronoDev.Application.Services
         {
             try
             {
-                var validation = new Validation
+                var exist = await _validationRepository
+                    .GetBySaisieIdAsync(dto.SaisieDeTempsId);
+
+                if (exist == null)
                 {
-                    commentaire=dto.commentaire,
-                    dateValidation = DateTime.Now,
-                    Decision = dto.Decision,
-                    ManagerId = dto.ManagerId,
-                    SaisieDeTempsId = dto.SaisieDeTempsId,
-                };
-                await _validationRepository.CreateValidation(validation);
+                    // creation la premier validation
+                    var validation = new Validation
+                    {
+                        commentaire = dto.commentaire,
+                        dateValidation = DateTime.Now,
+                        Decision = dto.Decision,
+                        ManagerId = dto.ManagerId,
+                        SaisieDeTempsId = dto.SaisieDeTempsId,
+                    };
+
+                    await _validationRepository.CreateValidation(validation);
+                }
+                else
+                {
+                    //UPDATE (modification de la validation existante)
+                    exist.commentaire = dto.commentaire;
+                    exist.Decision = dto.Decision;
+                    exist.ManagerId = dto.ManagerId;
+                    exist.dateValidation = DateTime.Now;
+
+                    _validationRepository.UpdateValidation(exist);
+                }
+
                 await _unitOfWork.SaveChangesAsync();
-                return ApiResponse.OK(true, "donnees ajouter avec succees");
+                return ApiResponse.OK(true, "Validation enregistrée avec succès");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                return ApiResponse.Fail(500,false, ex.Message);
+                return ApiResponse.Fail(500, false, ex.Message);
             }
         }
+
     }
 }
